@@ -7,15 +7,15 @@ import numpy as np
 df = pd.read_csv('medical_examination.csv')
 
 # Faz o calculo do IMC e calculo se a pessoa esta ou não acima do peso 
-df['IMC'] = df['weight'] / (df['height'] / 100)**2   #Cria uma nova coluna e realiza o calculo do IMC
-df['overweight'] = (df['IMC'] > 25).astype(int)     #define que o IMC acima de 25 é considerado acima do peso
+df['overweight'] = df['weight'] / (df['height'] / 100)**2   #Cria uma nova coluna e realiza o calculo do IMC
+df['overweight'] = (df['overweight'] > 25).astype(int)     #define que o IMC acima de 25 é considerado acima do peso
 
 # Normaliza os valores de colesterol e glicose para 0 (Bom) ou 1 (Ruim)
 df['cholesterol'] = (df['cholesterol'] > 1).astype(int) 
 df['gluc'] = (df['gluc'] > 1).astype(int)
 
 # 4
-def draw_cat_plot(df):
+def draw_cat_plot():
     # O .melt() transforma decompõe as colunas em linhas
     df_cat = pd.melt(df, id_vars = ['cardio'], value_vars=['cholesterol', 'gluc', 'smoke', 'alco', 'active', 'overweight'])
 
@@ -32,6 +32,7 @@ def draw_cat_plot(df):
 
 # Função do mapa de calor
 def draw_heat_map():
+    df_heat = df
     # Filtra os dados removendo informações incorretas
     df_heat = df_heat[
     (df_heat['ap_lo'] <= df_heat['ap_hi']) &
@@ -53,10 +54,11 @@ def draw_heat_map():
     sns.heatmap(corr,   #Correlation matriz
         mask=mask,      #Mascara do triangulo superior 
         annot=True,      #Mostra os valores dentro das celulas do heatmap
+        fmt=".1f",        #Deixa todos com uma casa decimal
         cmap="coolwarm",        #Paleta de cores utilizada
         vmin=-1,        #Define o valor minimo do mapa
         vmax=1,         #Define o valor maximo do mapa
-        linewidths=0.5,
+        linewidths=0.5,     #largura das linhas entre células
         square=True,        #Deixa as celulas quadradas
         cbar_kws={"shrink": 0.5}
     )
